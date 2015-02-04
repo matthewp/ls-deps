@@ -9,6 +9,7 @@ var argv = require('yargs')
   .describe('config', 'A module used to configure the loader')
   .describe('base-url', 'The root folder used to load modules from')
   .describe('depth', 'The depth of modules to show, by default it is 3')
+  .version(require('../package.json').version, 'version')
   .argv;
 
 var main = argv._[0];
