@@ -1,0 +1,32 @@
+{
+  "name": "ls-deps",
+  "version": "0.0.1",
+  "description": "List dependencies of an ES6 or SystemJS based project",
+  "main": "bin/ls-deps",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ls-deps": "bin/ls-deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matthewp/ls-deps"
+  },
+  "keywords": [
+    "es6",
+    "systemjs"
+  ],
+  "author": "Matthew Phillips",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matthewp/ls-deps/issues"
+  },
+  "homepage": "https://github.com/matthewp/ls-deps",
+  "dependencies": {
+    "dependencygraph": "0.0.4",
+    "dependencygraph-steal": "0.0.2",
+    "lodash.repeat": "^3.0.0",
+    "yargs": "^1.3.3"
+  }
+}

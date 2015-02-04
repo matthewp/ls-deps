@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+var argv = require('yargs')
+  .usage('Get all dependencies of a project')
+  .example('$0 --config config app/app', 'Use config to get the dependencies for app/app')
+  .required(1, 'Must provide the main module')
+  .boolean('steal')
+  .default('depth', 3)
+  .describe('steal', 'A Steal based project')
+  .describe('config', 'A module used to configure the loader')
+  .describe('base-url', 'The root folder used to load modules from')
+  .describe('depth', 'The depth of modules to show, by default it is 3')
+  .argv;
+
+var main = argv._[0];
+
+var DependencyGraph = require('dependencygraph' + (argv.steal ? '-steal' : ''));
+
+var dependencyGraph = DependencyGraph();
+
+if(argv.config) {
+  dependencyGraph.config(argv.config);
+}
+
+if(argv.baseUrl) {
+  dependencyGraph.root(argv.baseUrl);
+}
+
+dependencyGraph.for([main]).then(function(graph) {
+  display(graph, main);
+}, function(err) {
+  console.error('Oops! Unable to display the dependencies and we don\'t know why. Please file an issue and let us know: https://github.com/matthewp/ls-deps/issues/new');
+});
+
+var repeat = require('lodash.repeat');
+
+function indenter(offset) {
+  var out = '';
+  for(var i = 0; i < offset; i++) {
+    out += (i % 2) ? ' ' : '|';
+  }
+  return out;
+}
+
+function display(graph, dep, offset, depth) {
+  offset = offset || 0;
+  depth = depth || 1;
+
+  if(depth > argv.depth) {
+    return;
+  }
+
+  var node = graph[dep];
+  var indent = indenter(offset);
+
+  node.dependencies.forEach(function(dep) {
+    var lastThingy = (depth === argv.depth || !graph[dep].dependencies.length)
+      ? '─' : '┬';
+    console.log(indent + '└─' + lastThingy + ' ' + dep);
+    display(graph, dep, offset + 2, depth + 1);
+  });
+  //console.log('└─┬ ' + dep);
+  //console.log(node.dependencies);
+}
