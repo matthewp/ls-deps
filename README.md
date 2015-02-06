@@ -14,12 +14,14 @@ Examples:
 
 
 Options:
-  --steal     A Steal based project                           
   --config    A module used to configure the loader           
   --base-url  The root folder used to load modules from       
-  --depth     The depth of modules to show, by default it is 3  [default: 3]
+  --depth     The depth of modules to show                      [default: 3]
+  --inverse   Show all of the modules that are dependants on N
+  --steal     A Steal based project                           
+  --version   Show version number                             
 
-Must provide the main module
+Must provide a module to fetch dependencies for
 ```
 
 ## Example
@@ -27,8 +29,8 @@ Must provide the main module
 ```shell
 > ls-deps main
 
-└─┬ foo
-| └── bar
+├─┬ foo
+| ├── bar
 | └─┬ baz
 | | └── qux
 └── bar
