@@ -2,13 +2,14 @@
 var argv = require('yargs')
   .usage('Get all dependencies of a project')
   .example('$0 --config config app/app', 'Use config to get the dependencies for app/app')
-  .required(1, 'Must provide the main module')
+  .required(1, 'Must provide a module to fetch dependencies for')
   .boolean('steal')
   .default('depth', 3)
-  .describe('steal', 'A Steal based project')
   .describe('config', 'A module used to configure the loader')
   .describe('base-url', 'The root folder used to load modules from')
-  .describe('depth', 'The depth of modules to show, by default it is 3')
+  .describe('depth', 'The depth of modules to show')
+  .describe('inverse', 'Show all of the modules that are dependants on N')
+  .describe('steal', 'A Steal based project')
   .version(require('../package.json').version, 'version')
   .argv;
 
@@ -27,10 +28,33 @@ if(argv.baseUrl) {
 }
 
 dependencyGraph.for([main]).then(function(graph) {
-  display(graph, main);
+  var fn = argv.inverse ? reverseDisplay : display;
+  fn(graph, main);
 }, function(err) {
   console.error('Oops! Unable to display the dependencies and we don\'t know why. Please file an issue and let us know: https://github.com/matthewp/ls-deps/issues/new');
 });
+
+function reverseDisplay(graph, main) {
+  var masters = [];
+  var child = argv.inverse;
+
+  for(var p in graph) {
+    if(p !== main) {
+      find(p, graph[p]);
+    }
+  }
+
+  masters.forEach(function(dep, i) {
+    console.log(branch(masters.length, i), dep);
+  });
+
+  function find(name, node) {
+    var deps = node.dependencies || [];
+    if(~deps.indexOf(child)) {
+      masters.push(name);
+    }
+  }
+}
 
 function indenter(offset) {
   var out = '';
@@ -51,10 +75,15 @@ function display(graph, dep, offset, depth) {
   var node = graph[dep];
   var indent = indenter(offset);
 
-  node.dependencies.forEach(function(dep) {
+  var deps = node.dependencies;
+  deps.forEach(function(dep, i) {
     var lastThingy = (depth === argv.depth || !graph[dep].dependencies.length)
       ? '─' : '┬';
-    console.log(indent + '└─' + lastThingy + ' ' + dep);
+    console.log(indent + branch(deps.length, i) + lastThingy + ' ' + dep);
     display(graph, dep, offset + 2, depth + 1);
   });
+}
+
+function branch(leaves, leaf) {
+  return leaf !== (leaves - 1) ? '├─' : '└─';
 }
