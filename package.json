@@ -1,6 +1,6 @@
 {
   "name": "ls-deps",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "List dependencies of an ES6 or SystemJS based project",
   "main": "bin/ls-deps",
   "scripts": {
