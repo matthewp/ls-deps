@@ -13,14 +13,14 @@ var argv = require('yargs')
   .version(require('../package.json').version, 'version')
   .argv;
 
-var main = argv._[0];
+var main = removeJs(argv._[0]);
 
 var DependencyGraph = require('dependencygraph' + (argv.steal ? '-steal' : ''));
 
 var dependencyGraph = DependencyGraph();
 
 if(argv.config) {
-  dependencyGraph.config(argv.config);
+  dependencyGraph.config(removeJs(argv.config));
 }
 
 if(argv.baseUrl) {
@@ -90,4 +90,13 @@ function display(graph, dep, offset, depth) {
 
 function branch(leaves, leaf) {
   return leaf !== (leaves - 1) ? '├─' : '└─';
+}
+
+function removeJs(name) {
+  var idx = name.indexOf('.js');
+  var len = name.length;
+  if(idx === (len - 3)) {
+    return name.substr(0, len - 3);
+  }
+  return name;
 }
