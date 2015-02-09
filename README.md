@@ -38,6 +38,37 @@ Must provide a module to fetch dependencies for
 
 In the above example `main` is the main module and the dependencies listed are all chidren.  Use `--depth` to control how deep we go; by default we go 3 levels deep.
 
+## Options
+
+### --config
+
+Specifies a module that will act as configuration for the main module you'll load. If you use [jspm](http://jspm.io/) this is most likely the `config.js` file in your root folder.
+
+### --base-url
+
+Specifies a folder to act as the root folder for your project. It is equivalent to `System.baseURL`.
+
+### --depth
+
+Specifies how *deep* to go in showing a module's dependencies. By default `ls-deps` uses a depth of **3**, which means we'll show your module's dependencies and its dependencies.
+
+### --inverse
+
+Inverse is a nice feature when you're trying find out what modules depend on a certain other module. To follow our example above, what if you wanted to know which modules depend on **bar**. By specifying the `inverse` option you can see all of bars dependants.
+
+```shell
+> ls-deps --inverse bar main
+
+├─ foo
+└─ qux
+```
+
+As shown above **foo** and **qux** depend on **bar**.  I use this feature to see if my coworkers are requiring all of lodash instead of the individual module they need.
+
+### --steal
+
+Specifies whether this project needs [StealJS](http://stealjs.com/) to load. If you use Steal in your project and you depend on Steal's special extensions, use this option. It is a boolean option, no value is needed.
+
 ## License
 
 MIT
