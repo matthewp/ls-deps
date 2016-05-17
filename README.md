@@ -1,6 +1,6 @@
 # ls-deps
 
-A utility for displaying the dependency graph of modules in your project. It's like `npm ls`, but for client-side projects based on SystemJS or StealJS.
+A utility for displaying the dependency graph of modules in your project. It's like `npm ls`, but for client-side projects using StealJS.
 
 ## Usage
 
@@ -42,7 +42,7 @@ In the above example `main` is the main module and the dependencies listed are a
 
 ### --config
 
-Specifies a module that will act as configuration for the main module you'll load. If you use [jspm](http://jspm.io/) this is most likely the `config.js` file in your root folder.
+Specifies a module that will act as configuration for the main module you'll load. This is optional and `package.json` will be used by default.
 
 ### --base-url
 
@@ -64,10 +64,6 @@ Inverse is a nice feature when you're trying find out what modules depend on a c
 ```
 
 As shown above **foo** and **qux** depend on **bar**.  I use this feature to see if my coworkers are requiring all of lodash instead of the individual module they need.
-
-### --steal
-
-Specifies whether this project needs [StealJS](http://stealjs.com/) to load. If you use Steal in your project and you depend on Steal's special extensions, use this option. It is a boolean option, no value is needed.
 
 ## License
 

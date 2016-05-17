@@ -1,36 +1,40 @@
 #!/usr/bin/env node
+var path = require('path');
 var argv = require('yargs')
   .usage('Get all dependencies of a project')
-  .example('$0 --config config app/app', 'Use config to get the dependencies for app/app')
-  .required(1, 'Must provide a module to fetch dependencies for')
-  .boolean('steal')
+  .example('$0 app/app', 'Display the dependency tree for app/app')
   .default('depth', 3)
   .describe('config', 'A module used to configure the loader')
   .describe('base-url', 'The root folder used to load modules from')
   .describe('depth', 'The depth of modules to show')
   .describe('inverse', 'Show all of the modules that are dependants on N')
-  .describe('steal', 'A Steal based project')
   .version(require('../package.json').version, 'version')
   .argv;
 
 var main = removeJs(argv._[0]);
 
-var DependencyGraph = require('dependencygraph' + (argv.steal ? '-steal' : ''));
+var makeGraph = require('steal-tools').graph.make;
+var logger = require('steal-tools/lib/logger');
+var system = {};
 
-var dependencyGraph = DependencyGraph();
-
-if(argv.config) {
-  dependencyGraph.config(removeJs(argv.config));
+if(main) {
+  system.main = main;
 }
+
+system.config = argv.config || path.join(process.cwd(), "/package.json") + "!npm";
 
 if(argv.baseUrl) {
-  dependencyGraph.root(argv.baseUrl);
+  system.baseURL = argv.baseUrl;
 }
 
-dependencyGraph.for([main]).then(function(graph) {
+logger.setup({ quiet: true }, system);
+
+makeGraph(system).then(function(data){
   var fn = argv.inverse ? reverseDisplay : display;
-  fn(graph, main);
+  main = main || data.steal.System.main;
+  fn(data.graph, main);
 }, function(err) {
+  console.log(err, err.stack);
   console.error('Oops! Unable to display the dependencies and we don\'t know why. Please file an issue and let us know: https://github.com/matthewp/ls-deps/issues/new');
 });
 
@@ -93,6 +97,7 @@ function branch(leaves, leaf) {
 }
 
 function removeJs(name) {
+  if(typeof name === "undefined") return name;
   var idx = name.indexOf('.js');
   var len = name.length;
   if(idx === (len - 3)) {
